@@ -35,7 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CodeRefactoringProvider.cs" />
+    <Compile Include="MakeRelayCommandRefactoring.cs" />
+    <Compile Include="MakeViewModelBaseRefactoring.cs" />
+    <Compile Include="MakeListviewViewModelRefactoring.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
