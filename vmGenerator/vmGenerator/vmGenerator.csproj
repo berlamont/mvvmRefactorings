@@ -35,10 +35,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="MakeRelayCommandRefactoring.cs" />
-    <Compile Include="MakeViewModelBaseRefactoring.cs" />
+    <Compile Include="BindablePropertyWithoutNameOfOperatorAnalyzer.cs" />
+    <Compile Include="ConvertToNotifyPropertyRefactoring.cs" />
     <Compile Include="MakeListviewViewModelRefactoring.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyRewriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

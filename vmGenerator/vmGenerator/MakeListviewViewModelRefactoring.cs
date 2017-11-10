@@ -19,7 +19,7 @@ namespace vmGenerator
     class MakeListviewViewModelRefactoring : CodeRefactoringProvider
     {
 
-        public string Title = "Generate ViewModel";
+        public string Title = "Generate Listview ViewModel";
 
         public sealed override async Task ComputeRefactoringsAsync(CodeRefactoringContext context)
         {
@@ -30,11 +30,11 @@ namespace vmGenerator
             var classDecl = node as ClassDeclarationSyntax;
             if (classDecl == null)
                 return;
-            var action = CodeAction.Create(title: Title, createChangedDocument: c => MakeViewModelAsync(context.Document, classDecl, c), equivalenceKey: Title);
+            var action = CodeAction.Create(title: Title, createChangedDocument: c => MakeListviewViewModelAsync(context.Document, classDecl, c), equivalenceKey: Title);
             context.RegisterRefactoring(action);
         }
 
-        async Task<Document> MakeViewModelAsync(Document document, ClassDeclarationSyntax classDeclaration, CancellationToken cancellationToken)
+        async Task<Document> MakeListviewViewModelAsync(Document document, ClassDeclarationSyntax classDeclaration, CancellationToken cancellationToken)
         {
             var modelClassName = classDeclaration.Identifier.Text;
             var viewModelClassName = $"{modelClassName}VM";
@@ -81,19 +81,25 @@ IsBusy = false;
 }}
 }}
 ";
-            var newClassNode = SyntaxFactory.ParseSyntaxTree(newImplementation).GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault().WithAdditionalAnnotations(Formatter.Annotation, Simplifier.Annotation);
+            var newClassNode = SyntaxFactory.ParseSyntaxTree(newImplementation)
+                                            .GetRoot()
+                                            .DescendantNodes()
+                                            .OfType<ClassDeclarationSyntax>()
+                                            .FirstOrDefault()
+                                            .WithAdditionalAnnotations(Formatter.Annotation, Simplifier.Annotation);
+
             var parentNamespace = (NamespaceDeclarationSyntax)classDeclaration.Parent;
-            //var newParentNamespace = parentNamespace.AddMembers(newClassNode).NormalizeWhitespace();
+            var newParentNamespace = parentNamespace.AddMembers(newClassNode).NormalizeWhitespace();
             var root = await document.GetSyntaxRootAsync(cancellationToken);
             
-            var newRoot = (CompilationUnitSyntax)root.ReplaceNode(parentNamespace, newClassNode).NormalizeWhitespace();
+            var newRoot = (CompilationUnitSyntax)root.ReplaceNode(parentNamespace, newParentNamespace).NormalizeWhitespace();
    
 
             newRoot = newRoot.AddUsings(GenerateUsings("System", "Collections.ObjectModel"),
                 GenerateUsings("System", "ComponentModel"), GenerateUsings("Xamarin", "Forms"));
 
-            return document.Project.AddDocument(viewModelClassName, newRoot);
-            //return document.WithSyntaxRoot(newRoot);
+            //return document.Project.AddDocument(viewModelClassName, newRoot);
+            return document.WithSyntaxRoot(newRoot);
         }
 
         UsingDirectiveSyntax GenerateUsings(string first, string second) => 
